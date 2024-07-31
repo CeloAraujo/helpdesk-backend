@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,9 +21,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.marcelo.helpdesk.secutiry.JWTAuthenticationFilter;
+import com.marcelo.helpdesk.secutiry.JWTAuthorizationFilter;
 import com.marcelo.helpdesk.secutiry.JWTUtil;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecutiryConfig extends WebSecurityConfigurerAdapter {
 
 	private static final String[] PUBLIC_MATCHERS = { "/h2-console/**" };
@@ -50,12 +53,16 @@ public class SecutiryConfig extends WebSecurityConfigurerAdapter {
 
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 		
+		http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil,userDetailsService));
+		
 		http.authorizeRequests(
 				requests -> requests.antMatchers(PUBLIC_MATCHERS).permitAll().anyRequest().authenticated());
 		
 		http.sessionManagement( 
 				management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 	}
+	
+	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
