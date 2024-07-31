@@ -48,8 +48,8 @@ public class SecutiryConfig extends WebSecurityConfigurerAdapter {
             		headers -> headers.frameOptions().disable());
 		}
 
-		http.cors(withDefaults()).csrf(
-				csrf -> csrf.disable());
+		http.cors().configurationSource(corsConfigurationSource()).and()
+        .csrf(csrf -> csrf.disable());
 
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 		
@@ -77,7 +77,7 @@ public class SecutiryConfig extends WebSecurityConfigurerAdapter {
 		return source;
 	}
 	
-	
+	 
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
