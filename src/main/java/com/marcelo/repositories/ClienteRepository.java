@@ -1,4 +1,4 @@
-package com.marcelo.helpdesk.repositories;
+package com.marcelo.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
